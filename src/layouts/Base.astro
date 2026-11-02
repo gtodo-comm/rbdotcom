@@ -15,7 +15,7 @@ const path = Astro.url.pathname;
 </head>
 <body>
   <header class="top">
-    <a class="brand" href="/">Rashmi Bansal</a>
+    <a class="brand" href="/" aria-label="Rashmi Bansal, home"><img src="/logo.png" alt="Rashmi Bansal" style="height:72px;width:auto;display:block" /></a>
     <nav>{nav.map(([l,h]) => <a href={h} aria-current={path.startsWith(h) ? 'page' : undefined}>{l}</a>)}</nav>
   </header>
   <main><slot /></main>
@@ -33,7 +33,7 @@ const path = Astro.url.pathname;
     h2{font-size:clamp(1.6rem,3.4vw,2.2rem);font-weight:800}
     .wrap{max-width:var(--w);margin:0 auto;padding:0 1.25rem}
     .top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;max-width:var(--w);margin:0 auto;padding:1.25rem}
-    .brand{font-weight:800;font-size:1.3rem;text-decoration:none;font-family:"Source Serif 4",serif;font-style:italic}
+    .brand{display:block;line-height:0}.brand img{height:64px;width:auto}
     nav{display:flex;gap:1.25rem;flex-wrap:wrap;font-size:.95rem}
     nav a{text-decoration:none;padding-bottom:2px;border-bottom:2px solid transparent}
     nav a:hover,nav a[aria-current]{border-color:var(--red)}
