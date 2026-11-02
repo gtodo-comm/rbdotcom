@@ -1,0 +1,22 @@
+---
+import { site } from '../data/site';
+const live = !site.newsletterAction.startsWith('TODO_');
+---
+<section class="nl" id="newsletter">
+  <div class="wrap">
+    <p class="eyebrow">The newsletter</p>
+    <h2>One story a week, straight to your inbox.</h2>
+    <p>A new story, plus one from the archives. Free, always.</p>
+    <form action={live ? site.newsletterAction : undefined} method="post" onsubmit={live ? undefined : 'event.preventDefault();this.querySelector("button").textContent="Signup opens soon";'}>
+      <input type="email" name="email" placeholder="Your email" required aria-label="Email address" />
+      <button class="btn" type="submit">Subscribe</button>
+    </form>
+  </div>
+  <style>
+    .nl{background:var(--yellow);border-block:3px solid var(--black);padding:3rem 0;margin-top:4rem}
+    .nl h2{max-width:22ch}.nl p{margin:.25rem 0 1rem}
+    form{display:flex;gap:.75rem;flex-wrap:wrap}
+    input{flex:1 1 260px;font:inherit;padding:.8rem 1rem;border:2px solid var(--black);background:#fff}
+    button{font:inherit;cursor:pointer}
+  </style>
+</section>

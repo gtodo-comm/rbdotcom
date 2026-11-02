@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import BookGrid from '../components/BookGrid.astro';
+import Newsletter from '../components/Newsletter.astro';
+import { getCollection } from 'astro:content';
+import { site, categoryLabels } from '../data/site';
+const recent = (await getCollection('writing')).sort((a,b)=>+b.data.date-+a.data.date).slice(0,3);
+---
+<Base>
+  <section class="wrap hero">
+    <p class="eyebrow">Author. Speaker. Storyteller.</p>
+    <h1>{site.tagline}</h1>
+    <p class="lede serif">{site.intro}</p>
+    <p class="stats"><span><b>1.2M+</b> copies sold</span><span><b>12</b> languages</span><span><b>75+</b> workshops</span></p>
+    <p><a class="btn" href="#newsletter">Get the newsletter</a> <a class="btn alt" href="/books">Browse the books</a></p>
+  </section>
+  <Newsletter />
+  <section class="wrap sec"><h2>Books</h2><BookGrid limit={5} /><p><a href="/books">All books</a></p></section>
+  <section class="wrap sec">
+    <h2>Recent writing</h2>
+    <ul class="list">{recent.map(p => <li><a href={`/writing/${p.id}`}><span class="eyebrow">{categoryLabels[p.data.category] ?? p.data.category}</span><strong class="serif">{p.data.title}</strong></a></li>)}</ul>
+    <p><a href="/writing">Read all writing</a></p>
+  </section>
+  <section class="wrap sec">
+    <h2>Workshops and talks</h2>
+    <p class="lede">Short story writing workshops for all ages. Talks for companies, colleges and conferences on storytelling, entrepreneurship and purpose.</p>
+    <p><a class="btn alt" href="/workshops">See what I offer</a></p>
+  </section>
+  <style>
+    .hero{padding-top:3rem}.hero h1{max-width:14ch}.hero .lede{margin:1rem 0 1.5rem}
+    .stats{display:flex;gap:2rem;flex-wrap:wrap;margin:0 0 2rem}.stats b{color:var(--red);font-size:1.5rem;margin-right:.3rem}
+    .sec{margin-top:4rem}
+    .list{list-style:none;padding:0;display:grid;gap:1rem}
+    .list a{display:block;text-decoration:none;border:2px solid var(--black);padding:1rem 1.2rem;background:#fff}
+    .list a:hover{background:var(--yellow)}.list strong{display:block;font-size:1.3rem;margin-top:.2rem}
+  </style>
+</Base>

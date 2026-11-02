@@ -1,0 +1,24 @@
+---
+import { books } from '../data/site';
+const { limit } = Astro.props;
+const list = limit ? books.slice(0, limit) : books;
+---
+<ul class="grid">
+  {list.map(b => (
+    <li>
+      <a href={b.buy} rel="noopener" target="_blank">
+        <img src={`/books/${b.cover}.jpg`} alt={`${b.title} book cover`} loading="lazy" />
+        <strong>{b.title}</strong>
+        <span>{b.sub}</span>
+        <em>Buy on Amazon</em>
+      </a>
+    </li>
+  ))}
+</ul>
+<style>
+  .grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:2rem 1.5rem}
+  a{text-decoration:none;display:block}
+  img{width:100%;aspect-ratio:2/3;object-fit:cover;border:2px solid var(--black);box-shadow:5px 5px 0 var(--black);margin-bottom:.9rem;background:#ddd}
+  strong{display:block;line-height:1.2}span{display:block;font-size:.85rem;opacity:.75}
+  em{display:inline-block;margin-top:.4rem;font-size:.8rem;font-style:normal;font-weight:700;color:var(--red)}
+</style>

@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+const live = !site.contactUrl.startsWith('TODO_');
+---
+<Base title="Contact" description="Get in touch with Rashmi Bansal.">
+  <section class="wrap" style="padding-top:2rem;max-width:700px">
+    <p class="eyebrow">Contact</p><h1>Let's talk.</h1>
+    <p class="lede serif">For talks, workshops, commissioned books and everything else, use the enquiry page.</p>
+    <p><a class="btn" href={live ? site.contactUrl : '#'}>{live ? 'Open the enquiry page' : 'Enquiry page coming soon'}</a></p>
+  </section>
+</Base>

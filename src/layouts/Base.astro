@@ -1,0 +1,50 @@
+---
+import { site } from '../data/site';
+const { title = site.name, description = site.tagline } = Astro.props;
+const nav = [['Books','/books'],['Writing','/writing'],['Workshops & talks','/workshops'],['About','/about'],['Contact','/contact']];
+const path = Astro.url.pathname;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{title === site.name ? title : `${title} | ${site.name}`}</title>
+  <meta name="description" content={description} />
+  <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="/">Rashmi Bansal</a>
+    <nav>{nav.map(([l,h]) => <a href={h} aria-current={path.startsWith(h) ? 'page' : undefined}>{l}</a>)}</nav>
+  </header>
+  <main><slot /></main>
+  <footer>
+    <p>© {new Date().getFullYear()} Rashmi Bansal</p>
+    <p class="social">{Object.entries(site.social).map(([k,v]) => <a href={v} rel="noopener">{k}</a>)}</p>
+  </footer>
+  <style is:global>
+    :root{--red:#ff0013;--black:#000;--yellow:#ffd800;--blue:#35b8ec;--paper:#F5F0E8;--w:1080px}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--paper);color:var(--black);font:18px/1.65 "Articulat CF",Inter,system-ui,sans-serif}
+    a{color:inherit}
+    h1,h2,h3{line-height:1.1;letter-spacing:-.02em;margin:0 0 .5em}
+    h1{font-size:clamp(2.4rem,6vw,4.4rem);font-weight:800}
+    h2{font-size:clamp(1.6rem,3.4vw,2.2rem);font-weight:800}
+    .wrap{max-width:var(--w);margin:0 auto;padding:0 1.25rem}
+    .top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;max-width:var(--w);margin:0 auto;padding:1.25rem}
+    .brand{font-weight:800;font-size:1.3rem;text-decoration:none;font-family:"Source Serif 4",serif;font-style:italic}
+    nav{display:flex;gap:1.25rem;flex-wrap:wrap;font-size:.95rem}
+    nav a{text-decoration:none;padding-bottom:2px;border-bottom:2px solid transparent}
+    nav a:hover,nav a[aria-current]{border-color:var(--red)}
+    footer{border-top:3px solid var(--black);margin-top:5rem;padding:1.5rem 1.25rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;font-size:.9rem;max-width:var(--w);margin-inline:auto}
+    footer p{margin:0}.social a{margin-left:1rem;text-transform:capitalize}
+    .btn{display:inline-block;background:var(--red);color:#fff;font-weight:700;padding:.8rem 1.4rem;text-decoration:none;border:2px solid var(--black);box-shadow:4px 4px 0 var(--black)}
+    .btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--black)}
+    .btn.alt{background:#fff;color:var(--black)}
+    .lede{font-size:1.25rem;max-width:36ch}
+    .serif{font-family:"Source Serif 4",Georgia,serif}
+    .eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red)}
+  </style>
+</body>
+</html>

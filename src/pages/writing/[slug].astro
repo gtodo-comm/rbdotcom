@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import Newsletter from '../../components/Newsletter.astro';
+import { getCollection, render } from 'astro:content';
+import { categoryLabels } from '../../data/site';
+export async function getStaticPaths() {
+  return (await getCollection('writing')).map(p => ({ params: { slug: p.id }, props: { post: p } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+<Base title={post.data.title} description={post.data.excerpt}>
+  <article class="wrap post">
+    <p class="eyebrow"><a href="/writing" style="text-decoration:none">{categoryLabels[post.data.category] ?? post.data.category}</a></p>
+    <h1>{post.data.title}</h1>
+    <div class="body serif"><Content /></div>
+  </article>
+  <Newsletter />
+  <style>
+    .post{max-width:700px;padding-top:2rem}.post h1{font-size:clamp(2rem,5vw,3rem)}
+    .body{font-size:1.2rem}.body :global(p){margin:0 0 1.2em}.body :global(h2),.body :global(h3){margin-top:1.6em;font-family:Inter,sans-serif}
+    .body :global(.has-text-align-center){text-align:center}
+  </style>
+</Base>
