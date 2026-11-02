@@ -17,6 +17,7 @@ const list = limit ? books.slice(0, limit) : books;
 </ul>
 <style>
   .grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:2rem 1.5rem}
+  @media (max-width:600px){.grid{grid-template-columns:repeat(2,1fr);gap:1.5rem 1rem}img{box-shadow:3px 3px 0 var(--black);margin-bottom:.6rem}strong{font-size:.95rem}span{font-size:.78rem}}
   a{text-decoration:none;display:block}
   img{width:100%;aspect-ratio:2/3;object-fit:cover;border:2px solid var(--black);box-shadow:5px 5px 0 var(--black);margin-bottom:.9rem;background:#ddd}
   strong{display:block;line-height:1.2}span{display:block;font-size:.85rem;opacity:.75}
