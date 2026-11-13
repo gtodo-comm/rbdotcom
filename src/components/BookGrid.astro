@@ -10,16 +10,16 @@ const list = limit ? books.slice(0, limit) : books;
         <img src={`/books/${b.cover}.jpg`} alt={`${b.title} book cover`} loading="lazy" />
         <strong>{b.title}</strong>
         <span>{b.sub}</span>
-        <em>Buy on Amazon</em>
       </a>
     </li>
   ))}
 </ul>
 <style>
-  .grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:2rem 1.5rem}
-  @media (max-width:600px){.grid{grid-template-columns:repeat(2,1fr);gap:1.5rem 1rem}img{box-shadow:3px 3px 0 var(--black);margin-bottom:.6rem}strong{font-size:.95rem}span{font-size:.78rem}}
+  .grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:2.5rem 1.75rem}
+  @media (max-width:600px){.grid{grid-template-columns:repeat(2,1fr);gap:1.75rem 1rem}}
   a{text-decoration:none;display:block}
-  img{width:100%;aspect-ratio:2/3;object-fit:cover;border:2px solid var(--black);box-shadow:5px 5px 0 var(--black);margin-bottom:.9rem;background:#ddd}
-  strong{display:block;line-height:1.2}span{display:block;font-size:.85rem;opacity:.75}
-  em{display:inline-block;margin-top:.4rem;font-size:.8rem;font-style:normal;font-weight:700;color:var(--red)}
+  img{display:block;width:100%;aspect-ratio:2/3;object-fit:cover;outline:1px solid rgba(0,0,0,.15);margin-bottom:.8rem;background:var(--paper)}
+  strong{display:block;line-height:1.25;font-size:.98rem}
+  span{display:block;font-size:.85rem;line-height:1.4;margin-top:.15rem;opacity:.7}
+  a:hover span{opacity:1}
 </style>

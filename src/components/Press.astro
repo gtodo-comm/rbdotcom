@@ -1,0 +1,38 @@
+---
+// "Featured in": real logos where a freely usable file exists, typeset names for the rest (to be replaced with official files).
+import { press } from '../data/site';
+const marks = {
+  'The New York Times': { img: '/press/nyt.svg', h: 24 },
+  DNA: { img: '/press/dna.svg', h: 30 },
+  YourStory: { cls: 'ys' },
+  SheThePeople: { cls: 'stp' },
+  InsideIIM: { cls: 'iim' },
+  'Heartfulness Magazine': { cls: 'hf' },
+};
+---
+<div class="press">
+  <span class="lab">Featured in</span>
+  <ul>
+    {press.map((x) => {
+      const m = marks[x.name] ?? {};
+      return (
+        <li><a href={x.url} rel="noopener" target="_blank" title={x.year ? `${x.title} (${x.year})` : x.title}>
+          {m.img ? <img src={m.img} alt={x.name} style={`height:${m.h}px`} /> : <span class:list={['wm', m.cls]}>{x.name}</span>}
+        </a></li>
+      );
+    })}
+  </ul>
+</div>
+<style>
+  .press{display:flex;flex-direction:column;align-items:var(--press-align,flex-start);gap:1rem}
+  .lab{font:400 .8rem/1 var(--sans);opacity:.55}
+  ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:var(--press-align,flex-start);gap:1.1rem 2.6rem}
+  a{display:block;text-decoration:none;color:#111;opacity:.72;transition:opacity .3s var(--ease)}
+  a:hover{opacity:1}
+  img{display:block;width:auto;filter:grayscale(1) contrast(1.2)}
+  .wm{display:block;white-space:nowrap;line-height:1}
+  .ys{font:700 1.3rem/1 var(--sans);letter-spacing:-.03em}
+  .stp{font:700 1.15rem/1 var(--sans);letter-spacing:-.01em}
+  .iim{font:600 1.25rem/1 "Source Serif 4",Georgia,serif}
+  .hf{font:400 1.25rem/1 "Source Serif 4",Georgia,serif;font-style:italic}
+</style>

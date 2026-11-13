@@ -3,6 +3,15 @@ export const site = {
   name: 'Rashmi Bansal',
   tagline: 'A storyteller of purpose, possibilities and people.',
   intro: "I discover and chronicle the stories of India's greatest achievers, to inspire the next generation of achievers.",
+  // PLACEHOLDERS: shown on the page with a yellow highlight until Rashmi's team confirms them.
+  newsletter: {
+    name: 'Newsletter name',            // placeholder
+    readers: 'reader count',             // placeholder
+    finePrint: 'Free. No spam. Unsubscribe any time.',
+  },
+  // Placeholder statement. To be replaced with a line from one of her books, plus the book's name.
+  quote: { lines: ['Quote from book.'], source: 'book name' },
+  note: 'Short note from Rashmi.',
   // Newsletter: swap for the Substack embed or form endpoint once decided.
   newsletterAction: 'TODO_NEWSLETTER_ENDPOINT',
   // All inquiries go here (basic static page, still to be built).
@@ -14,6 +23,21 @@ export const site = {
     facebook: 'https://www.facebook.com/rashmibansal',
   },
 };
+// Press coverage found online on 13 Nov 2026. To be reviewed and replaced with Rashmi's own preferred list.
+export const press = [
+  { name: 'The New York Times', title: 'A Conversation With: Rashmi Bansal', year: 2011, url: 'https://archive.nytimes.com/india.blogs.nytimes.com/2011/09/19/a-conversation-with-rashmi-bansal/' },
+  { name: 'YourStory', title: 'Young people should experiment with life, have a dream and make it come true', year: 2015, url: 'https://yourstory.com/2015/03/rashmi-bansal' },
+  { name: 'DNA', title: 'Women entrepreneurs should start small but think big', year: 2011, url: 'https://www.dnaindia.com/mumbai/interview-women-entrepreneurs-should-start-small-but-think-big-1583549' },
+  { name: 'SheThePeople', title: "It's Important For Leaders To Be Entrepreneurs At Work", year: 2019, url: 'https://www.shethepeople.tv/news/shine-bright-rashmi-bansal-interview' },
+  { name: 'InsideIIM', title: 'I was very clear that I will not do a job I do not like', year: 2013, url: 'https://insideiim.com/i-was-very-clear-that-i-will-not-do-a-job-i-do-not-like-rashmi-bansal-in-conversation-with-insideiim-com' },
+  { name: 'Heartfulness Magazine', title: 'The road less traveled', year: null, url: 'https://heartfulness.org/magazine/the-road-less-traveled' },
+];
+// Talks and interviews found on YouTube on 13 Nov 2026. To be replaced with her best recent footage.
+export const videos = [
+  { id: 'MoXNWf-hlVM', title: "Stay Hungry Stay Foolish: Rashmi Bansal's story", by: 'Conversations Mumbai', length: '20 min' },
+  { id: 'HRKI_Rl6DUM', title: 'Launching Take Me Home at The Entrepreneurship Summit 2014', by: 'E-Cell, IIT Bombay', length: '25 min' },
+  { id: 'OAPyAL6Ichw', title: 'I decided I want to be a writer', by: 'MyGov India', length: '3 min' },
+];
 export const categoryLabels: Record<string, string> = {
   'stories-from-published-books': 'Stories from published books',
   'advice-to-entrepreneurs': 'Advice to entrepreneurs',

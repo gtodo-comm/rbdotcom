@@ -1,0 +1,65 @@
+---
+// A paper bookshelf: ten spines in a row, each built from its cover's colours with a paper-grain surface.
+// One book stands open showing its real cover; click or tap another spine to open that one instead.
+import { books } from '../data/site';
+const tone = {"connect_the_dots": {"c": "#ffffff", "a": "#b66464", "t": "#b66464"}, "arise_awake": {"c": "#e01c37", "a": "#e1afad", "t": "#fff"}, "i_have_a_dream": {"c": "#1fb5ab", "a": "#fdf9d3", "t": "#fdf9d3"}, "we_are_the_champions": {"c": "#ffffff", "a": "#887f82", "t": "#111"}, "take_me_home": {"c": "#f87d39", "a": "#fefcd6", "t": "#111"}, "follow_every_rainbow": {"c": "#7f3a97", "a": "#d5c1c5", "t": "#fff"}, "touch_the_sky": {"c": "#58aaac", "a": "#f8eae4", "t": "#f8eae4"}, "gods_own_kitchen": {"c": "#bc8e61", "a": "#ffffff", "t": "#ffffff"}, "shine_bright": {"c": "#130d0d", "a": "#454141", "t": "#fff"}, "who_said_she_cant": {"c": "#fedc01", "a": "#766a68", "t": "#766a68"}};
+const H = 264;
+const pct = [0.9, 1, 0.84, 0.95, 0.88, 1, 0.92, 0.86, 0.97, 0.9];
+const sws = [40, 46, 50, 42, 48, 44, 52, 46, 42, 48];
+const OPEN = 2;
+const vars = (b, i) => { const h = Math.round(H * pct[i % 10]); const t = tone[b.cover] ?? { c: '#111', a: '#fff', t: '#fff' }; return `--c:${t.c};--a:${t.a};--t:${t.t};--h:${h}px;--cw:${Math.round(h * 0.66)}px;--sw:${sws[i % 10]}px`; };
+---
+<div class="spines">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <filter id="paper" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="8" result="noise" />
+      <feDiffuseLighting in="noise" lighting-color="white" surfaceScale="1"><feDistantLight azimuth="45" elevation="35" /></feDiffuseLighting>
+    </filter>
+  </svg>
+  <div class="row" id="bookshelf">
+    {books.map((b, i) => (
+      <a class:list={['bk', { open: i === OPEN, serif: i % 2 === 1, long: b.title.length > 15 }]} href={b.buy} rel="noopener" target="_blank" aria-label={`${b.title}: ${b.sub}`} style={vars(b, i)}>
+        <span class="sp"><span class="ti">{b.title}</span><span class="au">Rashmi Bansal</span><i class="tex"></i></span>
+        <span class="cv"><img src={`/books/${b.cover}.jpg`} alt="" loading="lazy" /><i class="tex"></i></span>
+      </a>
+    ))}
+  </div>
+  <p class="hint">Pick a book off the shelf</p>
+</div>
+<style>
+  .spines{margin-top:clamp(3.5rem,7vw,5.5rem);padding:0 1.25rem;position:relative}
+  .row{display:flex;justify-content:safe center;align-items:flex-end;gap:5px;height:280px;max-width:var(--w);margin:0 auto;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+  .row::-webkit-scrollbar{display:none}
+  .bk{display:flex;flex:0 0 auto;width:var(--sw);height:var(--h);perspective:1000px;text-decoration:none;color:var(--t);cursor:pointer;transition:width .6s var(--ease),transform .4s var(--ease);-webkit-tap-highlight-color:transparent}
+  .bk.open{width:calc(var(--sw) + var(--cw) * .87)}
+  .bk:not(.open):hover{transform:translateY(-8px)}
+  .sp,.cv{position:relative;display:block;height:100%;flex:0 0 auto;transition:transform .6s var(--ease);overflow:hidden}
+  .sp{width:var(--sw);transform-origin:right center;display:flex;flex-direction:column;align-items:center;padding:14px 0 12px;background:var(--c);border-radius:1px 0 0 0}
+  .sp::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.26) 0,rgba(0,0,0,0) 22%,rgba(255,255,255,.1) 45%,rgba(0,0,0,0) 70%,rgba(0,0,0,.22) 100%),linear-gradient(180deg,rgba(255,255,255,.12),rgba(0,0,0,0) 12%,rgba(0,0,0,0) 90%,rgba(0,0,0,.18))}
+  .open .sp{transform:rotateY(-60deg)}
+  .cv{width:var(--cw);transform-origin:left center;transform:rotateY(90deg);opacity:0;transition:transform .6s var(--ease),opacity .25s linear}
+  .open .cv{transform:rotateY(30deg);opacity:1}
+  .cv img{display:block;width:100%;height:100%;object-fit:cover}
+  .cv::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.28) 0,rgba(255,255,255,.35) 3px,rgba(255,255,255,.12) 5px,rgba(0,0,0,.14) 9px,rgba(0,0,0,0) 18px,rgba(0,0,0,0) 82%,rgba(0,0,0,.1) 100%)}
+  .tex{position:absolute;inset:0;z-index:2;filter:url(#paper);opacity:.5;mix-blend-mode:multiply;pointer-events:none}
+  .ti,.au{position:relative;z-index:1;writing-mode:vertical-rl;white-space:nowrap}
+  .ti{flex:1;min-height:0;display:flex;align-items:center;overflow:hidden;font:600 .66rem/1 var(--sans);letter-spacing:.07em;text-transform:uppercase}
+  .serif .ti{font:500 .9rem/1 "Source Serif 4",Georgia,serif;letter-spacing:.01em;text-transform:none}
+  .long .ti{font-size:.6rem}.serif.long .ti{font-size:.8rem}
+  .au{font:500 .45rem/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;opacity:.7;margin-top:8px}
+  .hint{margin:0;position:absolute;right:max(1.25rem,calc((100% - var(--w)) / 2 + 1.25rem));bottom:14px;font:400 .78rem/1 var(--sans);opacity:.5}
+  @media (max-width:900px){.hint{display:none}}
+  @media (prefers-reduced-motion:reduce){.bk,.sp,.cv{transition:none}}
+</style>
+<script>
+  const shelf = document.getElementById('bookshelf');
+  if (shelf) {
+    const bks = [...shelf.querySelectorAll<HTMLAnchorElement>('.bk')];
+    bks.forEach((b) => b.addEventListener('click', (e) => {
+      if (b.classList.contains('open')) return; // already open: follow the link to the book
+      e.preventDefault();
+      bks.forEach((x) => x.classList.remove('open'));
+      b.classList.add('open');
+    }));
+  }
+</script>

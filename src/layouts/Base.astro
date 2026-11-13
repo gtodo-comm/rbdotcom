@@ -1,5 +1,6 @@
 ---
-import { site } from '../data/site';
+import { site, books } from '../data/site';
+import Signature from '../components/Signature.astro';
 const { title = site.name, description = site.tagline } = Astro.props;
 const nav = [['Books','/books'],['Writing','/writing'],['Workshops','/workshops'],['About','/about'],['Contact','/contact']];
 const path = Astro.url.pathname;
@@ -11,41 +12,86 @@ const path = Astro.url.pathname;
   <title>{title === site.name ? title : `${title} | ${site.name}`}</title>
   <meta name="description" content={description} />
   <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Caveat:wght@500&display=swap" rel="stylesheet" />
   <style is:global>
-    :root{--logo-h:72px;--red:#ff0013;--black:#000;--yellow:#ffd800;--blue:#35b8ec;--paper:#F5F0E8;--w:1080px}
+    /* DEMO fonts (Fontspring trial): preview only. 28 glyphs are blanked in the demo, so unicode-range limits it to the safe ones. Replace with the licensed webfonts before going live. */
+    @font-face{font-family:"Articulat CF";src:url(/fonts/articulat-regular.otf) format("opentype");font-weight:400;font-display:swap;unicode-range:U+20,U+2C,U+2E,U+30-33,U+35-3B,U+3F,U+41-5A,U+61-7A}
+    @font-face{font-family:"Articulat CF";src:url(/fonts/articulat-medium.otf) format("opentype");font-weight:500;font-display:swap;unicode-range:U+20,U+2C,U+2E,U+30-33,U+35-3B,U+3F,U+41-5A,U+61-7A}
+    @font-face{font-family:"Articulat CF";src:url(/fonts/articulat-bold.otf) format("opentype");font-weight:700;font-display:swap;unicode-range:U+20,U+2C,U+2E,U+30-33,U+35-3B,U+3F,U+41-5A,U+61-7A}
+    :root{--logo-h:64px;--red:#ff0013;--black:#000;--yellow:#ffd800;--blue:#35b8ec;--paper:#F5F0E8;--w:1040px;--ease:cubic-bezier(.22,1,.36,1);--sans:"Articulat CF","Helvetica Neue",Helvetica,Arial,sans-serif}
     *{box-sizing:border-box}
-    body{margin:0;background:var(--paper);color:var(--black);font:18px/1.65 "Articulat CF",Inter,system-ui,sans-serif}
-    a{color:inherit}
-    h1,h2,h3{line-height:1.1;letter-spacing:-.02em;margin:0 0 .5em}
-    h1{font-size:clamp(2.4rem,6vw,4.4rem);font-weight:800}
-    h2{font-size:clamp(1.6rem,3.4vw,2.2rem);font-weight:800}
+    body{margin:0;background:#fff;color:var(--black);font:17px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-underline-offset:.18em;text-decoration-thickness:1px}
+    a{transition:color .3s var(--ease)}
+    a:hover{text-decoration-thickness:2px}
+    :focus-visible{outline:2px solid var(--black);outline-offset:3px}
+    mark.ph{background:var(--yellow);color:var(--black);padding:0 .2em}
+    h1,h2,h3{text-wrap:balance;line-height:1.08;letter-spacing:-.025em;margin:0 0 .5em;font-weight:700}
+    h1{font-size:clamp(2.3rem,6vw,4.25rem)}
+    h2{font-size:clamp(1.4rem,2.6vw,1.75rem)}
+    main{position:relative;overflow-x:clip}
     .wrap{max-width:var(--w);margin:0 auto;padding:0 1.25rem}
-    .top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;max-width:var(--w);margin:0 auto;padding:1.25rem}
-    .brand{display:block;line-height:0}.brand img{height:64px;width:auto}
-    nav{display:flex;gap:1.25rem;flex-wrap:wrap;font-size:.95rem}
-    @media (max-width:600px){:root{--logo-h:56px}.top{padding:1rem 1.25rem .5rem}nav{width:100%;flex-wrap:nowrap;justify-content:space-between;gap:.5rem;font-size:.85rem}}
-    nav a{text-decoration:none;padding-bottom:2px;border-bottom:2px solid transparent}
-    nav a:hover,nav a[aria-current]{border-color:var(--red)}
-    footer{border-top:3px solid var(--black);margin-top:5rem;padding:1.5rem 1.25rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;font-size:.9rem;max-width:var(--w);margin-inline:auto}
-    footer p{margin:0}.social a{margin-left:1rem;text-transform:capitalize}
-    .btn{display:inline-block;background:var(--red);color:#fff;font-weight:700;padding:.8rem 1.4rem;text-decoration:none;border:2px solid var(--black);box-shadow:4px 4px 0 var(--black)}
-    .btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--black)}
-    .btn.alt{background:#fff;color:var(--black)}
-    .lede{font-size:1.25rem;max-width:36ch}
+    .top{display:flex;align-items:center;flex-wrap:wrap;gap:.75rem 2rem;max-width:var(--w);margin:0 auto;padding:1.5rem 1.25rem}
+    .brand{display:block;line-height:0;--sig-h:var(--logo-h)}
+    nav{display:flex;gap:1.75rem;flex-wrap:wrap;font-size:.95rem;margin-left:auto}
+    nav a{text-decoration:none}
+    nav a:hover,nav a[aria-current]{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.4em}
+    .nav-cta{font-size:.9rem;font-weight:700;text-decoration:none;background:var(--black);color:#fff;padding:.5rem .95rem;transition:opacity .3s var(--ease)}
+    .nav-cta:hover{opacity:.78}
+    @media (max-width:700px){:root{--logo-h:52px}.top{padding:1rem 1.25rem .5rem}.nav-cta{order:2;margin-left:auto}nav{order:3;width:100%;margin-left:0;flex-wrap:nowrap;justify-content:space-between;gap:.5rem;font-size:.85rem}}
+    footer{margin-top:5rem;border-top:1px solid var(--black);font-size:.9rem}
+    main:has(> .nl) + footer{margin-top:0;border-top:0}
+    .f-cols{max-width:var(--w);margin:0 auto;padding:2.5rem 1.25rem 2rem;display:grid;grid-template-columns:2fr 1fr 1fr;gap:2rem 3rem}
+    .f-cols h3{font-size:.9rem;letter-spacing:0;margin:0 0 .8rem}
+    .f-cols ul{list-style:none;margin:0;padding:0}
+    .f-cols li{margin-bottom:.4rem}
+    .f-cols .books{columns:2;column-gap:2rem}
+    .f-cols a{text-decoration:none;text-transform:none}
+    .f-cols a:hover{text-decoration:underline}
+    .f-cols .cap{text-transform:capitalize}
+    .f-legal{max-width:calc(var(--w) - 2.5rem);width:calc(100% - 2.5rem);margin:0 auto;padding:1.25rem 0;border-top:1px solid rgba(0,0,0,.15);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem 1.5rem;opacity:.75}
+    .f-legal p{margin:0}
+    @media (max-width:700px){.f-cols{grid-template-columns:1fr 1fr}.f-cols > :first-child{grid-column:1 / -1}}
+    .btn{display:inline-block;background:var(--black);color:#fff;font:inherit;font-weight:700;padding:.8rem 1.4rem;text-decoration:none;border:0;border-radius:0;cursor:pointer}
+    .btn{transition:background .3s var(--ease),transform .3s var(--ease)}
+    .btn:hover{opacity:.78;color:#fff}
+    .btn:active{transform:translateY(1px)}
+    .btn.alt{background:none;color:var(--black);padding:0;text-decoration:underline;font-weight:400}
+    .btn.alt:hover{background:none;opacity:1}
+    .lede{font-size:1.2rem;max-width:38ch}
     .serif{font-family:"Source Serif 4",Georgia,serif}
-    .eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red)}
+    .eyebrow{font-size:.9rem;margin:0 0 .75rem;color:var(--red)}
   </style>
 </head>
 <body>
   <header class="top">
-    <a class="brand" href="/" aria-label="Rashmi Bansal, home"><img src="/logo.png" alt="Rashmi Bansal" style="height:var(--logo-h);width:auto;display:block" /></a>
-    <nav>{nav.map(([l,h]) => <a href={h} aria-current={path.startsWith(h) ? 'page' : undefined}>{l}</a>)}</nav>
+    <a class="brand" href="/" aria-label="Rashmi Bansal, home"><Signature mode="load" /></a>
+    <nav aria-label="Main">{nav.map(([l,h]) => <a href={h} aria-current={path.startsWith(h) ? 'page' : undefined}>{l}</a>)}</nav>
+    <a class="nav-cta" href="/#newsletter">Newsletter</a>
   </header>
   <main><slot /></main>
   <footer>
-    <p>© {new Date().getFullYear()} Rashmi Bansal</p>
-    <p class="social">{Object.entries(site.social).map(([k,v]) => <a href={v} rel="noopener">{k}</a>)}</p>
+    <div class="f-cols">
+      <div><h3>Books</h3><ul class="books">{books.map(b => <li><a href={b.buy} rel="noopener" target="_blank">{b.title}</a></li>)}</ul></div>
+      <div><h3>Site</h3><ul>{nav.map(([l,h]) => <li><a href={h}>{l}</a></li>)}<li><a href="/#newsletter">Newsletter</a></li></ul></div>
+      <div><h3>Elsewhere</h3><ul>{Object.entries(site.social).map(([k,v]) => <li><a class="cap" href={v} rel="noopener">{k === 'x' ? 'X' : k}</a></li>)}</ul></div>
+    </div>
+    <div class="f-legal"><p>© {new Date().getFullYear()} Rashmi Bansal</p><p><mark class="ph">Privacy policy to come</mark></p></div>
   </footer>
+  <script is:inline>
+    (function(){
+      var d=document.documentElement; d.classList.add('js');
+      var rm=matchMedia('(prefers-reduced-motion: reduce)').matches; if(rm) return;
+      document.querySelectorAll('.sig').forEach(function(s){
+        if(s.dataset.sig==='load'){
+          var seen=false; try{seen=sessionStorage.getItem('sig')==='1'; sessionStorage.setItem('sig','1')}catch(e){}
+          if(!seen) s.classList.add('draw');
+        } else if('IntersectionObserver' in window){
+          s.classList.add('wait');
+          new IntersectionObserver(function(es,o){ if(es[0].isIntersecting){ s.classList.remove('wait'); s.classList.add('draw'); o.disconnect(); } },{threshold:.6}).observe(s);
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

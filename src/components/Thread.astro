@@ -1,0 +1,53 @@
+---
+// "Connect the dots" down the page: one node beside each section heading, joined by a thin line
+// that draws itself as you scroll. Sits in the left gutter, well clear of the text; wide screens only.
+---
+<svg class="thread" id="thread" aria-hidden="true" focusable="false"></svg>
+<style>
+  .thread{position:absolute;top:0;left:calc((100vw - var(--w)) / 2 - 76px);width:56px;pointer-events:none;z-index:3;overflow:visible}
+  @media (max-width:1259px){.thread{display:none}}
+</style>
+<script>
+  const svg = document.getElementById('thread') as unknown as SVGSVGElement | null;
+  const main = document.querySelector('main');
+  if (svg && main) {
+    const NS = 'http://www.w3.org/2000/svg';
+    const XS = [14, 42, 20, 44, 12, 38];
+    let nodes: { x: number; y: number; el: SVGCircleElement }[] = [];
+    let live: SVGPolylineElement | null = null;
+    let total = 0;
+    const topIn = (el: HTMLElement) => { let y = 0; let n: HTMLElement | null = el; while (n && n !== main) { y += n.offsetTop; n = n.offsetParent as HTMLElement | null; } return y; };
+    const mk = (tag: string, attrs: Record<string, string | number>) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, String(attrs[k])); svg.appendChild(e); return e; };
+
+    const build = () => {
+      svg.innerHTML = '';
+      const heads = [...main.querySelectorAll<HTMLElement>('h2')].filter((h) => !h.closest('#newsletter'));
+      if (heads.length < 2) return;
+      const H = main.offsetHeight;
+      svg.setAttribute('height', String(H)); svg.setAttribute('viewBox', `0 0 56 ${H}`); svg.style.height = H + 'px';
+      const pts = heads.map((h, i) => ({ x: XS[i % XS.length], y: Math.round(topIn(h) + h.offsetHeight / 2) }));
+      const str = pts.map((p) => `${p.x},${p.y}`).join(' ');
+      mk('polyline', { points: str, fill: 'none', stroke: 'rgba(0,0,0,.16)', 'stroke-width': 1, 'stroke-dasharray': '2 6', 'stroke-linecap': 'round' });
+      live = mk('polyline', { points: str, fill: 'none', stroke: '#111', 'stroke-width': 1.25, 'stroke-linejoin': 'round' }) as SVGPolylineElement;
+      total = live.getTotalLength();
+      live.style.strokeDasharray = String(total); live.style.strokeDashoffset = String(total);
+      nodes = pts.map((p) => ({ ...p, el: mk('circle', { cx: p.x, cy: p.y, r: 4.5, fill: '#fff', stroke: 'rgba(0,0,0,.35)', 'stroke-width': 1.25 }) as SVGCircleElement }));
+      paint();
+    };
+
+    let queued = false;
+    const paint = () => {
+      queued = false;
+      if (!live || !nodes.length) return;
+      const tip = scrollY + innerHeight * 0.55 - (main.getBoundingClientRect().top + scrollY);
+      const y0 = nodes[0].y, y1 = nodes[nodes.length - 1].y;
+      const f = Math.min(1, Math.max(0, (tip - y0) / (y1 - y0)));
+      live.style.strokeDashoffset = String(total * (1 - f));
+      nodes.forEach((n) => { const on = tip >= n.y; n.el.setAttribute('fill', on ? '#ff0013' : '#fff'); n.el.setAttribute('stroke', on ? '#ff0013' : 'rgba(0,0,0,.35)'); });
+    };
+    const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(paint); } };
+    build();
+    addEventListener('load', build); addEventListener('resize', build);
+    addEventListener('scroll', onScroll, { passive: true });
+  }
+</script>

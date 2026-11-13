@@ -1,5 +1,5 @@
 ---
-title: "ADVICE FOR YOUNG ENTREPRENEURS – Parakramsinh Jadeja"
+title: "Advice for Young Entrepreneurs – Parakramsinh Jadeja"
 date: 2025-02-12
 category: advice-to-entrepreneurs
 excerpt: "Main aisa youngsters ke liye bolna chahoonga, logon ko mann mein jo aata hai woh kare. (I always say to youngsters, you should do what you are really passionate about.) God has given everybody an equa"

@@ -1,0 +1,51 @@
+---
+import { books } from '../data/site';
+---
+<div class="shelf-wrap">
+  <ul class="shelf" id="shelf">
+    {books.map(b => (
+      <li>
+        <a href={b.buy} rel="noopener" target="_blank">
+          <span class="cover"><img src={`/books/${b.cover}.jpg`} alt={`${b.title} book cover`} loading="lazy" /></span>
+          <strong>{b.title}</strong>
+          <span class="sub">{b.sub}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>
+<style>
+  .shelf-wrap{--edge:max(1.25rem,calc((100vw - var(--w)) / 2 + 1.25rem))}
+  .shelf{list-style:none;margin:0;padding:1.5rem var(--edge) 1rem;display:flex;gap:2rem;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:var(--edge);scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .shelf::-webkit-scrollbar{display:none}
+  li{flex:0 0 clamp(150px,19vw,215px);scroll-snap-align:start;perspective:900px}
+  a{text-decoration:none;display:block}
+  .cover{display:block;position:relative;margin-bottom:.9rem;transform-style:preserve-3d;transform:translateY(var(--ty,0)) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+  .cover.moving{transition-duration:.15s,.5s;transition-timing-function:ease-out,var(--ease)}
+  .cover img{display:block;width:100%;aspect-ratio:2/3;object-fit:cover;outline:1px solid rgba(0,0,0,.14);background:var(--paper)}
+  /* spine crease */
+  .cover::before{content:"";position:absolute;inset:0 auto 0 0;width:7%;background:linear-gradient(90deg,rgba(0,0,0,.28),rgba(0,0,0,.06) 45%,rgba(255,255,255,.18) 60%,transparent);z-index:1;pointer-events:none}
+  /* page edge, seen when the cover turns */
+  .cover::after{content:"";position:absolute;top:1.2%;right:0;width:16px;height:97.6%;background:repeating-linear-gradient(90deg,#fff 0 1px,#cfcfcf 1px 2px);transform-origin:right center;transform:rotateY(90deg);pointer-events:none}
+  a:hover .cover,a:focus-visible .cover{--ty:-8px;box-shadow:0 22px 34px -20px rgba(0,0,0,.5)}
+  strong{display:block;line-height:1.25}
+  .sub{display:block;font-size:.85rem;line-height:1.4;margin-top:.15rem;opacity:.7}
+  @media (max-width:600px){.shelf{gap:1.1rem}li{flex-basis:44vw}}
+  @media (prefers-reduced-motion:reduce){.cover{transition:none}}
+</style>
+<script>
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const MAX = 6;
+    document.querySelectorAll('#shelf .cover').forEach((c) => {
+      const el = c as HTMLElement;
+      el.addEventListener('pointermove', (e) => {
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+        el.classList.add('moving');
+        el.style.setProperty('--ry', `${(x * 2 * MAX).toFixed(2)}deg`);
+        el.style.setProperty('--rx', `${(-y * 2 * MAX).toFixed(2)}deg`);
+      });
+      el.addEventListener('pointerleave', () => { el.classList.remove('moving'); el.style.setProperty('--ry', '0deg'); el.style.setProperty('--rx', '0deg'); });
+    });
+  }
+</script>

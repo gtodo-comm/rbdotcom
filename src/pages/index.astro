@@ -1,37 +1,220 @@
 ---
 import Base from '../layouts/Base.astro';
-import BookGrid from '../components/BookGrid.astro';
+import BookShelf from '../components/BookShelf.astro';
 import Newsletter from '../components/Newsletter.astro';
+import SignupForm from '../components/SignupForm.astro';
+import Press from '../components/Press.astro';
+import Dots from '../components/Dots.astro';
+import Spines from '../components/Spines.astro';
+import Thread from '../components/Thread.astro';
+import Videos from '../components/Videos.astro';
 import { getCollection } from 'astro:content';
-import { site, categoryLabels } from '../data/site';
-const recent = (await getCollection('writing')).sort((a,b)=>+b.data.date-+a.data.date).slice(0,3);
+import { site } from '../data/site';
+const all = (await getCollection('writing')).sort((a,b)=>+a.data.date-+b.data.date);
+const fmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+const summarise = (p) => {
+  const t = (p.data.excerpt || p.body || '').replace(/<[^>]+>/g, ' ').replace(/[#*_>\[\]]/g, '').replace(/\s+/g, ' ').trim();
+  const first = t.match(/^.{40,140}?[.!?](?=\s|$)/);
+  if (first) return first[0];
+  return t.length > 110 ? t.slice(0, t.lastIndexOf(' ', 110)) + '…' : t;
+};
+const recent = all.map((p, i) => ({ p, no: i + 1 })).reverse().slice(0, 4);
+const plain = (p) => (p?.body ?? '').replace(/<[^>]+>/g, ' ').replace(/&#(\d+);/g, (_, n) => String.fromCharCode(+n)).replace(/&amp;/g, '&').replace(/[#*_>\[\]]/g, '').replace(/\s+/g, ' ').trim();
+const cut = (t, n) => (t.length > n ? t.slice(0, t.lastIndexOf(' ', n)) + '…' : t);
+const words = site.tagline.split(' ');
+const lastWord = words.pop();
+const lead = all.find((x) => x.id === 'a-spring-in-her-step') ?? all[all.length - 1];
+const leadText = (() => { const t = plain(lead); const i = lead.data.excerpt ? t.indexOf(lead.data.excerpt.slice(0, 24)) : 0; return cut(t.slice(Math.max(0, i)), 460); })();
+const quote = site.quote.lines.map((l) => l.split(' '));
 ---
 <Base>
   <section class="wrap hero">
-    <p class="eyebrow">Author. Speaker. Storyteller.</p>
-    <h1>{site.tagline}</h1>
-    <p class="lede serif">{site.intro}</p>
-    <p class="stats"><span><b>1.2M+</b> copies sold</span><span><b>12</b> languages</span><span><b>75+</b> workshops</span></p>
-    <p><a class="btn" href="#newsletter">Get the newsletter</a> <a class="btn alt" href="/books">Browse the books</a></p>
+    <div class="intro">
+      <h1>{words.join(' ')} <span class="ink">{lastWord}<svg viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 9 C 40 3, 70 12, 110 6 S 170 4, 197 8" /></svg></span></h1>
+      <p class="lede">{site.intro}</p>
+      <p class="facts">Author of Stay Hungry Stay Foolish and Connect the Dots. Over 1.2 million copies sold, in 12 languages.</p>
+      <div class="signup">
+        <p><strong><mark class="ph">{site.newsletter.name}</mark></strong> One new story a week, plus one from the archives. Read by <mark class="ph">{site.newsletter.readers}</mark> people every week.</p>
+        <SignupForm />
+        <span class="scribble" aria-hidden="true"><svg viewBox="0 0 70 34"><path d="M66 6 C 48 0, 22 6, 6 24 M6 24 l 11 -3 M6 24 l 3 -11" /></svg>free, every week</span>
+      </div>
+    </div>
+    <div class="pic">
+      <Dots class="d-pic" w={506} h={594} seed={11} focus={[386, 470]} density={0.95} link={6} />
+      <span class="duo"><img class="portrait" src="/rashmi.jpg" alt="Rashmi Bansal" width="800" height="1000" /></span>
+    </div>
   </section>
+
+  <section class="wrap press-row"><Press /></section>
+
+  <section class="sec reveal num">
+    <header class="wrap-head"><h2>Books</h2><span class="ctl"><button type="button" id="prev" aria-label="Previous books">&larr;</button><button type="button" id="next" aria-label="More books">&rarr;</button><a href="/books">All books</a></span></header>
+    <BookShelf />
+  </section>
+
+  <section class="say" id="say">
+    <div class="pin wrap">
+      <Dots class="d-say" w={440} h={242} seed={5} focus={[300, 121]} density={0.6} link={6} />
+      <img class="q-cover" src="/books/connect_the_dots.jpg" alt="" aria-hidden="true" />
+      <figure>
+        <span class="qm" aria-hidden="true">“</span>
+        <blockquote class="words"><mark class="ph">{quote.map((line) => <span class="line">{line.map((w) => <span class="w">{w} </span>)}</span>)}</mark></blockquote>
+        <figcaption>from <cite><mark class="ph">{site.quote.source}</mark></cite></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="wrap sec reveal num">
+    <header><h2>Writing</h2><a href="/writing">All writing</a></header>
+    <div class="wgrid"><ol class="list">{recent.map(({ p, no }) => (
+      <li><a href={`/writing/${p.id}`}>
+        <span class="no">No. {no}</span>
+        <span class="main"><strong>{p.data.title}</strong><span class="sum">{summarise(p)}</span></span>
+        <time datetime={p.data.date.toISOString().slice(0,10)}>{fmt.format(p.data.date)}</time>
+      </a></li>
+    ))}</ol>
+      <a class="leaf" href={`/writing/${lead.id}`}>
+        <span class="leaf-t">{lead.data.title}</span>
+        <span class="leaf-b">{leadText}</span>
+        <span class="leaf-n">Continue reading</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="wrap sec reveal num">
+    <header><h2>Workshops and talks</h2><a href="/workshops">Details and enquiries</a></header>
+    <div class="two">
+      <p><strong>Workshops.</strong> Short story writing for adults, and for kids aged 9 to 14.</p>
+      <p><strong>Talks.</strong> For companies, colleges and conferences, on storytelling, entrepreneurship and purpose.</p>
+    </div>
+    <h3 class="watch">Watch</h3>
+    <Videos />
+  </section>
+
+  <Spines />
   <Newsletter />
-  <section class="wrap sec"><h2>Books</h2><BookGrid limit={5} /><p><a href="/books">All books</a></p></section>
-  <section class="wrap sec">
-    <h2>Recent writing</h2>
-    <ul class="list">{recent.map(p => <li><a href={`/writing/${p.id}`}><span class="eyebrow">{categoryLabels[p.data.category] ?? p.data.category}</span><strong class="serif">{p.data.title}</strong></a></li>)}</ul>
-    <p><a href="/writing">Read all writing</a></p>
-  </section>
-  <section class="wrap sec">
-    <h2>Workshops and talks</h2>
-    <p class="lede">Short story writing workshops for all ages. Talks for companies, colleges and conferences on storytelling, entrepreneurship and purpose.</p>
-    <p><a class="btn alt" href="/workshops">See what I offer</a></p>
-  </section>
+  <Thread />
+
   <style>
-    .hero{padding-top:3rem}.hero h1{max-width:14ch}.hero .lede{margin:1rem 0 1.5rem}
-    .stats{display:flex;gap:2rem;flex-wrap:wrap;margin:0 0 2rem}.stats b{color:var(--red);font-size:1.5rem;margin-right:.3rem}
-    .sec{margin-top:4rem}
-    .list{list-style:none;padding:0;display:grid;gap:1rem}
-    .list a{display:block;text-decoration:none;border:2px solid var(--black);padding:1rem 1.2rem;background:#fff}
-    .list a:hover{background:var(--yellow)}.list strong{display:block;font-size:1.3rem;margin-top:.2rem}
+    .hero{display:grid;grid-template-columns:1.35fr 1fr;gap:2.5rem 4rem;align-items:start;padding-top:clamp(1.5rem,4vw,3rem);padding-bottom:1rem}
+    .hero h1{font-size:clamp(2.3rem,5.2vw,3.75rem);margin-bottom:.6em}
+    .intro p{margin:0 0 1rem}
+    .lede{max-width:none}
+    .facts{opacity:.7}
+    .signup{position:relative;border-top:3px solid var(--black);padding-top:1.1rem;margin-top:2rem}
+    .pic{position:relative;animation:rise 1s var(--ease) .12s both}
+    .pic :global(.d-pic){position:absolute;right:-78px;bottom:-70px;color:rgba(0,0,0,.42);--dot-line:#000}
+    .portrait{position:relative;display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover}
+    .intro > *{animation:rise .9s var(--ease) both}
+    .intro > :nth-child(2){animation-delay:.08s}.intro > :nth-child(3){animation-delay:.16s}.intro > :nth-child(4){animation-delay:.24s}
+    @keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+    .press-row{margin-top:clamp(2rem,4vw,3rem)}
+    .watch{font-size:1rem;margin:2.5rem 0 1rem}
+    .sec{margin-top:clamp(3.5rem,7vw,5.5rem)}
+    .wrap-head{max-width:calc(var(--w) - 2.5rem);margin-inline:auto;width:calc(100% - 2.5rem)}
+    .sec header{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;border-top:1px solid var(--black);padding-top:1rem;margin-bottom:1.25rem}
+    .sec header h2{margin:0}
+    .sec header a{font-size:.95rem;white-space:nowrap}
+    .ctl{display:flex;align-items:center;gap:.5rem}
+    .ctl button{font:inherit;font-size:1.1rem;line-height:1;width:2.4rem;height:2.4rem;border:1px solid var(--black);background:#fff;color:var(--black);cursor:pointer;transition:background .3s var(--ease),color .3s var(--ease)}
+    .ctl button:hover{background:var(--black);color:#fff}
+    .ctl a{margin-left:.75rem}
+
+    /* the one red moment: words light up as the block scrolls through */
+    .say{--pad:clamp(3rem,6vw,4.5rem);background:var(--red) url(/grain.svg);color:#fff;margin-top:clamp(4.5rem,8vw,6.5rem);padding:var(--pad) 0}
+    .pin{position:relative}
+    .pin figure{position:relative;margin:0}
+    .pin :global(.d-say){position:absolute;right:1.25rem;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.55);--dot-line:#fff}
+    .words{margin:0;max-width:26ch;font-size:clamp(1.6rem,3.4vw,2.5rem);font-weight:700;line-height:1.12;letter-spacing:-.02em;text-wrap:balance}
+    .words mark{display:inline-block}
+    .words .line{display:block}
+    figcaption{margin-top:1.1rem;font-size:.95rem}
+    cite{font-style:normal}
+
+    .list{list-style:none;padding:0;margin:0;border-bottom:1px solid rgba(0,0,0,.15)}
+    .list li + li{border-top:1px solid rgba(0,0,0,.15)}
+    .list a{display:grid;grid-template-columns:4.5rem 1fr auto;gap:0 1.5rem;align-items:baseline;padding:1.1rem 0;text-decoration:none}
+    .no,.list time{font-size:.85rem;opacity:.6;font-variant-numeric:tabular-nums;white-space:nowrap}
+    .main{min-width:0;transition:transform .5s var(--ease)}
+    .list a:hover .main{transform:translateX(8px)}
+    .list strong{display:block;font-size:1.25rem;font-weight:500;line-height:1.3}
+    .sum{display:block;font-size:.95rem;opacity:.7;margin-top:.2rem;max-width:62ch;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:1rem 4rem}
+    .two p{margin:0;font-size:1.1rem;max-width:34ch}
+
+    .ink{position:relative;white-space:nowrap}
+    .ink svg{position:absolute;left:-2%;bottom:-.2em;width:104%;height:.3em;overflow:visible}
+    .ink path{fill:none;stroke:var(--red);stroke-width:3;stroke-linecap:round;vector-effect:non-scaling-stroke;stroke-dasharray:1;stroke-dashoffset:1;animation:ink .9s var(--ease) .7s forwards}
+    @keyframes ink{to{stroke-dashoffset:0}}
+    @media (prefers-reduced-motion:reduce){.ink path{animation:none;stroke-dashoffset:0}}
+    .wgrid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:1.5rem 3.5rem;align-items:start}
+    .leaf{display:block;text-decoration:none;background:#fff;border:1px solid rgba(0,0,0,.12);padding:1.9rem 1.7rem 1.4rem;font-family:"Source Serif 4",Georgia,serif;transform:rotate(1.4deg);box-shadow:0 26px 44px -30px rgba(0,0,0,.5);transition:transform .5s var(--ease);margin-top:.5rem}
+    .leaf:hover{transform:rotate(0deg) translateY(-4px)}
+    .leaf-t{display:block;text-align:center;font-style:italic;font-size:1.05rem;margin-bottom:1.1rem;padding-bottom:1rem;border-bottom:1px solid rgba(0,0,0,.12)}
+    .leaf-b{display:block;font-size:.92rem;line-height:1.62}
+    .leaf-b::first-letter{float:left;font-size:3.2em;line-height:.82;font-weight:600;padding:.06em .04em 0 0}
+    .leaf-n{display:block;margin-top:1.1rem;font-family:var(--sans);font-size:.82rem;text-decoration:underline;text-underline-offset:.25em}
+    .qm{display:block;font:700 6.5rem/.62 Georgia,serif;height:.42em;opacity:.4}
+    .scribble{position:absolute;left:calc(100% + 12px);display:flex;align-items:flex-start;gap:.35rem;font:500 1.5rem/1 "Caveat",cursive;color:var(--red);white-space:nowrap;transform:rotate(-5deg)}
+    .scribble svg{width:58px;height:28px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-top:.55rem}
+    @media (max-width:1000px){.scribble{display:none}}
+    :global(main){counter-reset:sec}
+    .num{isolation:isolate;counter-increment:sec}
+    .num h2{position:relative}
+    .num h2::before{content:counter(sec,decimal-leading-zero);position:absolute;left:-.1em;top:50%;transform:translateY(-52%);font:700 6em/1 "Helvetica Neue",Helvetica,Arial,sans-serif;letter-spacing:-.04em;color:rgba(0,0,0,.055);z-index:-1;pointer-events:none}
+    .signup .scribble{bottom:2.3rem}
+    .duo{display:block;position:relative;background:var(--red)}
+    .duo .portrait{mix-blend-mode:multiply;filter:contrast(1.08)}
+    .q-cover{position:absolute;z-index:2;right:calc(1.25rem + 330px);top:calc(-1 * var(--pad) - 30px);height:calc(100% + 2 * var(--pad) + 60px);width:auto;aspect-ratio:2/3;object-fit:cover;transform:rotate(-4deg);box-shadow:0 28px 44px -22px rgba(0,0,0,.6)}
+    :global(.spines ~ .nl){margin-top:0 !important}
+    @media (max-width:760px){
+      .q-cover{display:none}
+      .wgrid{grid-template-columns:minmax(0,1fr)}
+      .leaf{transform:none}
+      .hero,.two{grid-template-columns:1fr}
+      .pic{max-width:420px}
+      .press-row{margin-top:5rem}
+      .pin :global(.d-say){display:none}
+      .ctl button{display:none}
+      .list a{grid-template-columns:3.6rem 1fr;gap:0 .75rem}
+      .list time{grid-column:2;margin-top:.3rem}
+    }
+    @media (prefers-reduced-motion:reduce){
+      .intro > *,.pic{animation:none}
+      .list a:hover .main{transform:none}
+    }
   </style>
+  <style is:global>
+    .js .reveal{opacity:0;transform:translateY(32px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+    .js .reveal.in{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none;transition:none}}
+  </style>
+  <script>
+    document.documentElement.classList.add('js');
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -10% 0px' });
+    document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+    const shelf = document.getElementById('shelf')!;
+    const step = () => shelf.clientWidth * 0.7;
+    document.getElementById('prev')?.addEventListener('click', () => shelf.scrollBy({ left: -step(), behavior: 'smooth' }));
+    document.getElementById('next')?.addEventListener('click', () => shelf.scrollBy({ left: step(), behavior: 'smooth' }));
+
+    // Statement: each word's brightness follows the scroll position, both directions.
+    const say = document.getElementById('say')!;
+    const words = [...say.querySelectorAll<HTMLElement>('.words .w')];
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      let queued = false;
+      const paint = () => {
+        queued = false;
+        const r = say.getBoundingClientRect(), vh = innerHeight;
+        const p = Math.min(1, Math.max(0, (vh * 0.9 - r.top) / (vh * 0.5)));
+        const n = words.length;
+        words.forEach((w, i) => { w.style.opacity = String(0.36 + 0.64 * Math.min(1, Math.max(0, p * n - i))); });
+      };
+      const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(paint); } };
+      addEventListener('scroll', onScroll, { passive: true }); addEventListener('resize', onScroll); paint();
+    }
+  </script>
 </Base>

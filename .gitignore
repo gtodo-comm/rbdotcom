@@ -2,3 +2,6 @@ node_modules
 dist
 .astro
 .DS_Store
+
+# Articulat CF trial fonts: local preview only, not licensed for publishing
+public/fonts/

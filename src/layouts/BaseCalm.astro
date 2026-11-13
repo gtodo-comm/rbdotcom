@@ -1,0 +1,79 @@
+---
+// Calm variant of the layout, for side-by-side comparison with Base.astro. Preview at /calm.
+import { site, books } from '../data/site';
+const { title = site.name, description = site.tagline } = Astro.props;
+const nav = [['Books','/books'],['Writing','/writing'],['Workshops','/workshops'],['About','/about'],['Contact','/contact']];
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Caveat:wght@500&display=swap" rel="stylesheet" />
+  <style is:global>
+    /* DEMO fonts (Fontspring trial): preview only. Replace with the licensed webfonts before going live. */
+    @font-face{font-family:"Articulat CF";src:url(/fonts/articulat-regular.otf) format("opentype");font-weight:400;font-display:swap;unicode-range:U+20,U+2C,U+2E,U+30-33,U+35-3B,U+3F,U+41-5A,U+61-7A}
+    @font-face{font-family:"Articulat CF";src:url(/fonts/articulat-medium.otf) format("opentype");font-weight:500;font-display:swap;unicode-range:U+20,U+2C,U+2E,U+30-33,U+35-3B,U+3F,U+41-5A,U+61-7A}
+    @font-face{font-family:"Articulat CF";src:url(/fonts/articulat-bold.otf) format("opentype");font-weight:700;font-display:swap;unicode-range:U+20,U+2C,U+2E,U+30-33,U+35-3B,U+3F,U+41-5A,U+61-7A}
+    :root{--red:#ff0013;--ink:#111;--soft:#FAF7F3;--line:rgba(17,17,17,.12);--muted:rgba(17,17,17,.62);--yellow:#ffd800;--w:1000px;--ease:cubic-bezier(.22,1,.36,1);
+      --sans:"Articulat CF","Helvetica Neue",Helvetica,Arial,sans-serif;--serif:"Source Serif 4",Georgia,serif}
+    *{box-sizing:border-box}
+    body{margin:0;background:#fff;color:var(--ink);font:400 19px/1.7 var(--serif);-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration-color:rgba(17,17,17,.3);text-underline-offset:.22em;text-decoration-thickness:1px;transition:text-decoration-color .3s var(--ease)}
+    a:hover{text-decoration-color:var(--ink)}
+    :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+    h1,h2,h3{font-family:var(--sans);font-weight:500;line-height:1.25;letter-spacing:-.01em;margin:0;text-wrap:balance}
+    p{margin:0 0 1em}
+    main{position:relative;overflow-x:clip}
+    .wrap{max-width:var(--w);margin:0 auto;padding:0 1.5rem}
+    .ui{font-family:var(--sans)}
+    mark.ph{background:var(--yellow);color:var(--ink);padding:0 .2em}
+    .top{display:flex;align-items:center;gap:1rem 2.25rem;flex-wrap:wrap;max-width:var(--w);margin:0 auto;padding:1.4rem 1.5rem;font:400 .82rem/1 var(--sans)}
+    .top .brand{line-height:0;margin-right:auto}.top .brand img{height:44px;width:auto;display:block}
+    .top nav{display:flex;gap:1.75rem}
+    .top a{text-decoration:none}.top a:hover{text-decoration:underline;text-underline-offset:.4em}
+    @media (max-width:700px){.top nav{order:3;width:100%;justify-content:space-between;gap:.5rem}}
+    .btn{display:inline-block;font:700 .9rem/1 var(--sans);background:var(--red);color:#fff;border:0;border-radius:0;padding:.95rem 1.3rem;cursor:pointer;text-decoration:none;transition:opacity .3s var(--ease)}
+    .btn:hover{opacity:.85}
+    footer{border-top:1px solid var(--line);font:400 .82rem/1.5 var(--sans);color:var(--muted)}
+    .f-cols{max-width:var(--w);margin:0 auto;padding:2.5rem 1.5rem 2rem;display:grid;grid-template-columns:2fr 1fr 1fr;gap:2rem 3rem}
+    .f-cols h3{font-size:.82rem;font-weight:700;color:var(--ink);margin:0 0 .8rem}
+    .f-cols ul{list-style:none;margin:0;padding:0}.f-cols li{margin-bottom:.4rem}
+    .f-cols .books{columns:2;column-gap:2rem}
+    .f-cols a{text-decoration:none}.f-cols a:hover{text-decoration:underline}
+    .f-cols .cap{text-transform:capitalize}
+    .f-legal{max-width:calc(var(--w) - 3rem);width:calc(100% - 3rem);margin:0 auto;padding:1.25rem 0 2rem;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem 1.5rem}
+    .f-legal p{margin:0}
+    @media (max-width:700px){.f-cols{grid-template-columns:1fr 1fr}.f-cols > :first-child{grid-column:1 / -1}}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="/calm" aria-label="Rashmi Bansal, home"><img src="/logo.png" alt="Rashmi Bansal" /></a>
+    <nav aria-label="Main">{nav.map(([l,h]) => <a href={h}>{l}</a>)}</nav>
+    <a href="#newsletter">Newsletter</a>
+  </header>
+  <main><slot /></main>
+  <footer>
+    <div class="f-cols">
+      <div><h3>Books</h3><ul class="books">{books.map(b => <li><a href={b.buy} rel="noopener" target="_blank">{b.title}</a></li>)}</ul></div>
+      <div><h3>Site</h3><ul>{nav.map(([l,h]) => <li><a href={h}>{l}</a></li>)}<li><a href="#newsletter">Newsletter</a></li></ul></div>
+      <div><h3>Elsewhere</h3><ul>{Object.entries(site.social).map(([k,v]) => <li><a class="cap" href={v} rel="noopener">{k === 'x' ? 'X' : k}</a></li>)}</ul></div>
+    </div>
+    <div class="f-legal"><p>© {new Date().getFullYear()} Rashmi Bansal</p><p><mark class="ph">Privacy policy to come</mark></p></div>
+  </footer>
+  <script is:inline>
+    (function(){
+      document.documentElement.classList.add('js');
+      if(matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return;
+      document.querySelectorAll('.sig').forEach(function(s){
+        s.classList.add('wait');
+        new IntersectionObserver(function(es,o){ if(es[0].isIntersecting){ s.classList.remove('wait'); s.classList.add('draw'); o.disconnect(); } },{threshold:.6}).observe(s);
+      });
+    })();
+  </script>
+</body>
+</html>

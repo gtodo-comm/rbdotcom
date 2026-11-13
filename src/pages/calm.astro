@@ -1,0 +1,237 @@
+---
+// Calm variant of the homepage (James Clear style restraint). Same content as index.astro. Compare / with /calm.
+import BaseCalm from '../layouts/BaseCalm.astro';
+import Signature from '../components/Signature.astro';
+import Press from '../components/Press.astro';
+import Dots from '../components/Dots.astro';
+import Spines from '../components/Spines.astro';
+import Thread from '../components/Thread.astro';
+import Videos from '../components/Videos.astro';
+import { getCollection } from 'astro:content';
+import { site, books } from '../data/site';
+const all = (await getCollection('writing')).sort((a,b)=>+a.data.date-+b.data.date);
+const fmt = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+const summarise = (p) => {
+  const t = (p.data.excerpt || p.body || '').replace(/<[^>]+>/g, ' ').replace(/[#*_>\[\]]/g, '').replace(/\s+/g, ' ').trim();
+  const first = t.match(/^.{40,140}?[.!?](?=\s|$)/);
+  if (first) return first[0];
+  return t.length > 110 ? t.slice(0, t.lastIndexOf(' ', 110)) + '…' : t;
+};
+const recent = all.map((p, i) => ({ p, no: i + 1 })).reverse().slice(0, 4);
+const fan = ['connect_the_dots', 'arise_awake', 'i_have_a_dream'];
+const plain = (p) => (p?.body ?? '').replace(/<[^>]+>/g, ' ').replace(/&#(\d+);/g, (_, n) => String.fromCharCode(+n)).replace(/&amp;/g, '&').replace(/[#*_>\[\]]/g, '').replace(/\s+/g, ' ').trim();
+const cut = (t, n) => (t.length > n ? t.slice(0, t.lastIndexOf(' ', n)) + '…' : t);
+const words = site.tagline.split(' ');
+const lastWord = words.pop();
+const pageA = cut(plain(all.find((x) => x.id === 'to-sir-with-love')), 1300);
+const pageB = cut(plain(all.find((x) => x.id === 'a-cut-above')), 1300);
+const live = !site.newsletterAction.startsWith('TODO_');
+const stub = 'event.preventDefault();this.querySelector("button").textContent="Signup opens soon";';
+---
+<BaseCalm title="Rashmi Bansal (calm preview)">
+  <section class="hero">
+    <div class="wrap">
+      <h1>{words.join(' ')} <span class="ink">{lastWord}<svg viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true"><path pathLength="1" d="M3 9 C 40 3, 70 12, 110 6 S 170 4, 197 8" /></svg></span></h1>
+      <div class="stage">
+        <Dots class="d-hero" w={1012} h={418} seed={7} hole={[330, 0, 682, 330]} focus={[506, 260]} density={1.25} link={6} />
+        <div class="pages" aria-hidden="true"><p>{pageA}</p><p>{pageB}</p></div>
+        <div class="fan" aria-hidden="true">{fan.map((c) => <img src={`/books/${c}.jpg`} alt="" />)}</div>
+      </div>
+      <p class="pitch ui"><mark class="ph">{site.newsletter.name}</mark>: one new story a week, plus one from the archives.</p>
+      <div class="formwrap"><span class="scribble" aria-hidden="true"><svg viewBox="0 0 70 34"><path d="M66 6 C 48 0, 22 6, 6 24 M6 24 l 11 -3 M6 24 l 3 -11" /></svg>free, every week</span>
+      <form class="signup" action={live ? site.newsletterAction : undefined} method="post" onsubmit={live ? undefined : stub}>
+        <input type="email" name="email" placeholder="Email address" required aria-label="Email address" />
+        <button class="btn" type="submit">Subscribe</button>
+      </form></div>
+      <p class="fine ui">Read by <mark class="ph">{site.newsletter.readers}</mark> people every week. {site.newsletter.finePrint}</p>
+      <div class="press-row ui"><Press /></div>
+    </div>
+  </section>
+
+  <section class="wrap duo">
+    <div class="about">
+      <span class="duo-pic"><img class="portrait" src="/rashmi.jpg" alt="Rashmi Bansal" width="800" height="1000" /></span>
+      <h2>Hi, I am Rashmi Bansal</h2>
+      <p>{site.intro}</p>
+      <p>Author of <em>Stay Hungry Stay Foolish</em> and <em>Connect the Dots</em>. Over 1.2 million copies sold, in 12 languages. <a href="/about">More about me</a>.</p>
+    </div>
+    <div class="latest">
+      <h3 class="label">Latest writing</h3>
+      <ol>{recent.map(({ p, no }) => (
+        <li><a href={`/writing/${p.id}`}>
+          <span class="meta ui">No. {no} · <time datetime={p.data.date.toISOString().slice(0,10)}>{fmt.format(p.data.date)}</time></span>
+          <strong>{p.data.title}</strong>
+          <span class="sum">{summarise(p)}</span>
+        </a></li>
+      ))}</ol>
+      <p class="more ui"><a href="/writing">All writing</a></p>
+    </div>
+  </section>
+
+  <section class="shelf-sec num">
+    <div class="wrap head"><h2>Books</h2><span class="ctl ui"><button type="button" id="prev" aria-label="Previous books">&larr;</button><button type="button" id="next" aria-label="More books">&rarr;</button><a href="/books">All books</a></span></div>
+    <ul class="shelf" id="shelf">{books.map(b => (
+      <li><a href={b.buy} rel="noopener" target="_blank">
+        <img src={`/books/${b.cover}.jpg`} alt={`${b.title} book cover`} loading="lazy" />
+        <strong class="ui">{b.title}</strong><span class="ui">{b.sub}</span>
+      </a></li>
+    ))}</ul>
+  </section>
+
+  <section class="wrap quote">
+    <figure>
+      <blockquote><mark class="ph">{site.quote.lines.join(' ')}</mark></blockquote>
+      <figcaption class="ui">from <cite><mark class="ph">{site.quote.source}</mark></cite></figcaption>
+    </figure>
+  </section>
+
+  <section class="wrap talks num">
+    <div class="head"><h2>Workshops and talks</h2><span class="ui"><a href="/workshops">Details and enquiries</a></span></div>
+    <div class="two">
+      <p><strong>Workshops.</strong> Short story writing for adults, and for kids aged 9 to 14.</p>
+      <p><strong>Talks.</strong> For companies, colleges and conferences, on storytelling, entrepreneurship and purpose.</p>
+    </div>
+    <h3 class="watch">Watch</h3>
+    <Videos />
+  </section>
+
+  <Spines />
+  <section class="nl" id="newsletter">
+    <div class="wrap in">
+      <div class="note">
+        <h2><mark class="ph">{site.newsletter.name}</mark></h2>
+        <p><mark class="ph">{site.note}</mark></p>
+        <div class="sign"><Signature mode="view" /></div>
+      </div>
+      <div class="cardwrap">
+        <Dots class="d-card" w={330} h={286} seed={21} focus={[215, 110]} density={1.1} link={5} />
+        <div class="card">
+        <p class="ui lead">Read by <mark class="ph">{site.newsletter.readers}</mark> people every week.</p>
+        <form class="signup stack" action={live ? site.newsletterAction : undefined} method="post" onsubmit={live ? undefined : stub}>
+          <input type="email" name="email" placeholder="Email address" required aria-label="Email address" />
+          <button class="btn" type="submit">Subscribe</button>
+        </form>
+        <p class="fine ui">{site.newsletter.finePrint}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Thread />
+
+  <style>
+    .hero{background:var(--soft) url(/grain.svg);text-align:center;padding:clamp(3rem,7vw,5rem) 0 clamp(3rem,6vw,4.5rem);animation:fade .8s var(--ease) both}
+    @keyframes fade{from{opacity:0}to{opacity:1}}
+    .hero h1{font-size:clamp(1.7rem,3.6vw,2.4rem);max-width:20ch;margin:0 auto}
+    .hero{overflow:hidden}
+    .stage{position:relative;margin:clamp(2rem,4vw,3rem) auto}
+    .stage :global(.d-hero){position:absolute;left:50%;bottom:-64px;transform:translateX(-50%);color:rgba(17,17,17,.26);--dot-line:rgba(255,0,19,.8)}
+    .fan{position:relative;height:clamp(230px,30vw,310px);max-width:460px;margin:0 auto}
+    .cardwrap{position:relative}
+    .cardwrap :global(.d-card){position:absolute;right:-70px;top:-64px;color:rgba(17,17,17,.2);--dot-line:rgba(255,0,19,.75)}
+    .card{position:relative}
+    .fan img{position:absolute;left:50%;bottom:0;height:86%;aspect-ratio:2/3;object-fit:cover;box-shadow:0 26px 44px -22px rgba(17,17,17,.4),0 2px 8px rgba(17,17,17,.08)}
+    .fan img:nth-child(1){transform:translateX(-118%) rotate(-7deg);transform-origin:bottom right}
+    .fan img:nth-child(3){transform:translateX(18%) rotate(7deg);transform-origin:bottom left}
+    .fan img:nth-child(2){height:100%;transform:translateX(-50%);z-index:1}
+    .pitch{position:relative;font-size:1rem;font-weight:500;line-height:1.5;max-width:34ch;margin:0 auto 1.25rem}
+    .signup{display:flex;max-width:440px;margin:0 auto;box-shadow:0 14px 30px -18px rgba(17,17,17,.25)}
+    .signup input{flex:1;min-width:0;font:400 .95rem var(--sans);padding:.95rem 1rem;border:1px solid var(--line);border-right:0;border-radius:0;background:#fff;color:var(--ink)}
+    .fine{font-size:.78rem;line-height:1.5;color:var(--muted);margin:1rem auto 0;max-width:40ch}
+
+    .press-row{--press-align:center;margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--line);font-size:.9rem}
+    .watch{font-size:.95rem;font-weight:700;margin:2.75rem 0 1.1rem}
+    .duo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);border-bottom:1px solid var(--line)}
+    .duo > div{padding:clamp(3rem,6vw,4.5rem) 0}
+    .about{padding-right:clamp(1.5rem,5vw,4rem) !important;border-right:1px solid var(--line)}
+    .latest{padding-left:clamp(1.5rem,5vw,4rem) !important}
+    .portrait{width:92px;height:92px;border-radius:50%;object-fit:cover;object-position:50% 20%;display:block;margin-bottom:1.5rem}
+    .duo h2{font-size:clamp(1.5rem,2.6vw,1.9rem);margin-bottom:1rem}
+    .label{font-size:.95rem;font-weight:700;margin-bottom:1.25rem}
+    .latest ol{list-style:none;margin:0;padding:0}
+    .latest li{margin-bottom:1.5rem}
+    .latest a{display:block;text-decoration:none}
+    .meta{display:block;font-size:.75rem;color:var(--muted);font-variant-numeric:tabular-nums}
+    .latest strong{display:block;font-weight:400;font-size:1.1rem;line-height:1.4;text-decoration:underline;text-decoration-color:rgba(17,17,17,.3);text-decoration-thickness:1px;text-underline-offset:.22em;transition:text-decoration-color .3s var(--ease)}
+    .latest a:hover strong{text-decoration-color:var(--ink)}
+    .sum{display:block;font-size:.92rem;color:var(--muted);line-height:1.5;margin-top:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .more{font-size:.85rem;margin:0}
+
+    .head{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;margin-bottom:1.5rem}
+    .head h2{font-size:clamp(1.5rem,2.6vw,1.9rem)}
+    .head .ui{font-size:.85rem}
+    .shelf-sec{padding:clamp(3rem,6vw,4.5rem) 0;border-bottom:1px solid var(--line)}
+    .ctl{display:flex;align-items:center;gap:.4rem}
+    .ctl button{font:inherit;line-height:1;width:2.1rem;height:2.1rem;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;transition:border-color .3s var(--ease)}
+    .ctl button:hover{border-color:var(--ink)}
+    .ctl a{margin-left:.75rem}
+    .shelf{--edge:max(1.5rem,calc((100vw - var(--w)) / 2 + 1.5rem));list-style:none;margin:0;padding:.75rem var(--edge) 1.5rem;display:flex;gap:2.25rem;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:var(--edge);scrollbar-width:none}
+    .shelf::-webkit-scrollbar{display:none}
+    .shelf li{flex:0 0 clamp(130px,15vw,165px);scroll-snap-align:start}
+    .shelf a{display:block;text-decoration:none}
+    .shelf img{display:block;width:100%;aspect-ratio:2/3;object-fit:cover;margin-bottom:1rem;box-shadow:0 18px 30px -18px rgba(17,17,17,.35),0 1px 4px rgba(17,17,17,.08);transition:transform .5s var(--ease)}
+    .shelf a:hover img{transform:translateY(-4px)}
+    .shelf strong{display:block;font-size:.88rem;font-weight:500;line-height:1.3}
+    .shelf span{display:block;font-size:.78rem;line-height:1.4;color:var(--muted);margin-top:.2rem}
+
+    .quote{padding:clamp(3.5rem,8vw,6rem) 1.5rem;text-align:center;border-bottom:1px solid var(--line)}
+    .quote figure{margin:0 auto;max-width:36ch}
+    .quote figure::before{content:"\201C";display:block;font:600 5.5rem/.7 Georgia,serif;height:.45em;color:var(--red);margin:0 auto 1.25rem}
+    .quote blockquote{margin:0;font-size:clamp(1.4rem,2.8vw,1.85rem);font-style:italic;line-height:1.45}
+    .quote figcaption{margin-top:1.1rem;font-size:.82rem;color:var(--muted)}
+    .quote cite{font-style:normal}
+
+    .talks{padding-top:clamp(3rem,6vw,4.5rem);padding-bottom:clamp(3rem,6vw,4.5rem)}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:1rem clamp(2rem,6vw,5rem)}
+    .two p{margin:0;max-width:36ch}
+    .two strong{font-family:var(--sans);font-weight:500}
+
+    .nl{overflow:hidden;background:var(--soft) url(/grain.svg);padding:clamp(3.5rem,7vw,5.5rem) 0}
+    .in{display:grid;grid-template-columns:1.15fr 1fr;gap:2.5rem clamp(2rem,6vw,5rem);align-items:center}
+    .nl h2{font-size:clamp(1.5rem,2.6vw,1.9rem);margin-bottom:1rem}
+    .sign{--sig-h:70px;margin-top:1.5rem}
+    .card{background:#fff;padding:2.25rem 2rem;text-align:center;box-shadow:0 24px 50px -30px rgba(17,17,17,.3)}
+    .lead{font-size:.95rem;font-weight:500;margin-bottom:1.1rem}
+    .stack{flex-direction:column;gap:.6rem;box-shadow:none;max-width:none}
+    .stack input{border-right:1px solid var(--line);text-align:center}
+
+    .ink{position:relative;white-space:nowrap}
+    .ink svg{position:absolute;left:-2%;bottom:-.2em;width:104%;height:.3em;overflow:visible}
+    .ink path{fill:none;stroke:var(--red);stroke-width:3;stroke-linecap:round;vector-effect:non-scaling-stroke;stroke-dasharray:1;stroke-dashoffset:1;animation:ink .9s var(--ease) .7s forwards}
+    @keyframes ink{to{stroke-dashoffset:0}}
+    @media (prefers-reduced-motion:reduce){.ink path{animation:none;stroke-dashoffset:0}}
+    .pages{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);width:min(780px,100%);height:66%;display:grid;grid-template-columns:1fr 1fr;background:#fff;border:1px solid var(--line);box-shadow:0 18px 30px -26px rgba(17,17,17,.35)}
+    .pages p{margin:0;padding:1.1rem 1.2rem;font:400 7.5px/1.6 var(--serif);color:rgba(17,17,17,.5);text-align:justify;overflow:hidden}
+    .pages p:first-child{padding-right:250px;border-right:1px solid var(--line)}
+    .pages p:last-child{padding-left:250px}
+    .scribble{position:absolute;left:calc(100% + 12px);display:flex;align-items:flex-start;gap:.35rem;font:500 1.5rem/1 "Caveat",cursive;color:var(--red);white-space:nowrap;transform:rotate(-5deg)}
+    .scribble svg{width:58px;height:28px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-top:.55rem}
+    @media (max-width:1000px){.scribble{display:none}}
+    :global(main){counter-reset:sec}
+    .num{isolation:isolate;counter-increment:sec}
+    .num h2{position:relative}
+    .num h2::before{content:counter(sec,decimal-leading-zero);position:absolute;left:-.1em;top:50%;transform:translateY(-52%);font:700 6em/1 "Helvetica Neue",Helvetica,Arial,sans-serif;letter-spacing:-.04em;color:rgba(0,0,0,.055);z-index:-1;pointer-events:none}
+    .formwrap{position:relative;max-width:440px;margin:0 auto}
+    .formwrap .scribble{top:.1rem}
+    .duo-pic{display:block;position:relative;width:124px;height:124px;border-radius:50%;overflow:hidden;background:var(--red);box-shadow:0 0 0 7px #fff;margin:calc(-1 * clamp(3rem,6vw,4.5rem) - 62px) 0 1.5rem}
+    .duo-pic .portrait{width:100%;height:100%;margin:0;border-radius:0;mix-blend-mode:multiply;filter:contrast(1.08)}
+    :global(.spines){margin-top:0 !important}
+    @media (max-width:760px){
+      .duo-pic{margin-top:0}
+      .pages{display:none}
+      .duo{grid-template-columns:minmax(0,1fr)}
+      .two,.in{grid-template-columns:1fr}
+      .about{border-right:0;border-bottom:1px solid var(--line);padding-right:0 !important}
+      .latest{padding-left:0 !important}
+      .ctl button{display:none}
+      .shelf{gap:1.25rem}.shelf li{flex-basis:38vw}
+    }
+    @media (prefers-reduced-motion:reduce){.hero{animation:none}.shelf img{transition:none}}
+  </style>
+  <script>
+    const shelf = document.getElementById('shelf')!;
+    const step = () => shelf.clientWidth * 0.7;
+    document.getElementById('prev')?.addEventListener('click', () => shelf.scrollBy({ left: -step(), behavior: 'smooth' }));
+    document.getElementById('next')?.addEventListener('click', () => shelf.scrollBy({ left: step(), behavior: 'smooth' }));
+  </script>
+</BaseCalm>

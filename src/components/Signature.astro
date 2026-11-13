@@ -1,0 +1,21 @@
+---
+// Placeholder for the "signature writes itself" effect: wipes the two handwritten lines in, left to right.
+// Swap for a true stroke-by-stroke draw once the vector logo arrives.
+const { mode = 'load', invert = false } = Astro.props;
+---
+<span class:list={['sig', { invert }]} data-sig={mode}>
+  <img class="l1" src="/logo.png" alt="Rashmi Bansal" width="492" height="267" />
+  <img class="l2" src="/logo.png" alt="" aria-hidden="true" width="492" height="267" />
+</span>
+<style>
+  .sig{position:relative;display:block;height:var(--sig-h,64px);aspect-ratio:492/267}
+  .sig img{position:absolute;inset:0;width:100%;height:100%}
+  .sig.invert img{filter:brightness(0) invert(1)}
+  .l1{clip-path:inset(0 0 50% 0)}
+  .l2{clip-path:inset(50% 0 0 0)}
+  :global(.js) .sig.wait img{opacity:0}
+  .sig.draw .l1{animation:sig1 .9s cubic-bezier(.4,0,.2,1) both}
+  .sig.draw .l2{animation:sig2 .9s cubic-bezier(.4,0,.2,1) .75s both}
+  @keyframes sig1{from{clip-path:inset(0 100% 50% 0)}to{clip-path:inset(0 0 50% 0)}}
+  @keyframes sig2{from{clip-path:inset(50% 100% 0 0)}to{clip-path:inset(50% 0 0 0)}}
+</style>
