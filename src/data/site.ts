@@ -51,6 +51,7 @@ export const categoryLabels: Record<string, string> = {
 };
 const a = (isbn: string) => `https://www.amazon.in/dp/${isbn}`;
 export const books = [
+  { title: 'Stay Hungry Stay Foolish', sub: 'Stories of 25 IIM Ahmedabad graduates who chose entrepreneurship', cover: 'stay_hungry_stay_foolish', buy: a('8190453017') },
   { title: 'Connect the Dots', sub: 'Stories of 20 entrepreneurs without an MBA', cover: 'connect_the_dots', buy: a('8193182170') },
   { title: 'Arise Awake', sub: 'Stories of 10 young entrepreneurs', cover: 'arise_awake', buy: 'https://www.amazon.in/s?k=arise+awake+by+rashmi+bansal' },
   { title: 'I Have a Dream', sub: 'Social entrepreneurs who are changing India', cover: 'i_have_a_dream', buy: a('8193182162') },

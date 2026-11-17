@@ -1,12 +1,12 @@
 ---
-// A paper bookshelf: ten spines in a row, each built from its cover's colours with a paper-grain surface.
+// A paper bookshelf: a row of spines, each built from its cover's colours with a paper-grain surface.
 // One book stands open showing its real cover; click or tap another spine to open that one instead.
 import { books } from '../data/site';
-const tone = {"connect_the_dots": {"c": "#ffffff", "a": "#b66464", "t": "#b66464"}, "arise_awake": {"c": "#e01c37", "a": "#e1afad", "t": "#fff"}, "i_have_a_dream": {"c": "#1fb5ab", "a": "#fdf9d3", "t": "#fdf9d3"}, "we_are_the_champions": {"c": "#ffffff", "a": "#887f82", "t": "#111"}, "take_me_home": {"c": "#f87d39", "a": "#fefcd6", "t": "#111"}, "follow_every_rainbow": {"c": "#7f3a97", "a": "#d5c1c5", "t": "#fff"}, "touch_the_sky": {"c": "#58aaac", "a": "#f8eae4", "t": "#f8eae4"}, "gods_own_kitchen": {"c": "#bc8e61", "a": "#ffffff", "t": "#ffffff"}, "shine_bright": {"c": "#130d0d", "a": "#454141", "t": "#fff"}, "who_said_she_cant": {"c": "#fedc01", "a": "#766a68", "t": "#766a68"}};
+const tone = {"stay_hungry_stay_foolish": {"c": "#ffffff", "a": "#b72a2a", "t": "#b72a2a"}, "connect_the_dots": {"c": "#ffffff", "a": "#b66464", "t": "#b66464"}, "arise_awake": {"c": "#e01c37", "a": "#e1afad", "t": "#fff"}, "i_have_a_dream": {"c": "#1fb5ab", "a": "#fdf9d3", "t": "#fdf9d3"}, "we_are_the_champions": {"c": "#ffffff", "a": "#887f82", "t": "#111"}, "take_me_home": {"c": "#f87d39", "a": "#fefcd6", "t": "#111"}, "follow_every_rainbow": {"c": "#7f3a97", "a": "#d5c1c5", "t": "#fff"}, "touch_the_sky": {"c": "#58aaac", "a": "#f8eae4", "t": "#f8eae4"}, "gods_own_kitchen": {"c": "#bc8e61", "a": "#ffffff", "t": "#ffffff"}, "shine_bright": {"c": "#130d0d", "a": "#454141", "t": "#fff"}, "who_said_she_cant": {"c": "#fedc01", "a": "#766a68", "t": "#766a68"}};
 const H = 264;
 const pct = [0.9, 1, 0.84, 0.95, 0.88, 1, 0.92, 0.86, 0.97, 0.9];
 const sws = [40, 46, 50, 42, 48, 44, 52, 46, 42, 48];
-const OPEN = 2;
+const OPEN = 3;
 const vars = (b, i) => { const h = Math.round(H * pct[i % 10]); const t = tone[b.cover] ?? { c: '#111', a: '#fff', t: '#fff' }; return `--c:${t.c};--a:${t.a};--t:${t.t};--h:${h}px;--cw:${Math.round(h * 0.66)}px;--sw:${sws[i % 10]}px`; };
 ---
 <div class="spines">
